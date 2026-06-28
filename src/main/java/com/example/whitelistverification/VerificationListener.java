@@ -62,7 +62,7 @@ public class VerificationListener implements Listener {
             player.teleport(loc);
         }
 
-        // Display a large title message directly on their screen upon joining
+        // 10-Second 2B2T Centered Title Display 
         Title title = Title.title(
             plugin.colorize("&4&lVERIFICATION REQUIRED"),
             plugin.colorize("&eType &a/password <password> &ein chat to join!"),
@@ -89,7 +89,6 @@ public class VerificationListener implements Listener {
                 lockedLoc.setPitch(to.getPitch());
                 event.setTo(lockedLoc);
 
-                // Send a non-intrusive action bar notification if they try to move away
                 player.sendActionBar(plugin.colorize("&c&lLOG LOCKED: &eType &a/password <password> &eto unlock."));
             }
         }
@@ -229,7 +228,7 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
-            // OPERATOR BYPASS: Allow operators to execute any command seamlessly
+            // Server Operator Command Pass-through
             if (player.isOp()) {
                 return;
             }
@@ -249,7 +248,7 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandSend(PlayerCommandSendEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
-            // OPERATOR BYPASS: Do not restrict tab completions for operators
+            // Server Operator Autocomplete Pass-through
             if (player.isOp()) {
                 return;
             }
