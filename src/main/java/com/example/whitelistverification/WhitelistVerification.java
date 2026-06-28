@@ -1,6 +1,7 @@
 package com.example.whitelistverification;
 
 import org.bukkit.Bukkit;
+import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -34,14 +35,21 @@ public final class WhitelistVerification extends JavaPlugin {
         String prefixStr = getConfig().getString("messages.plugin-prefix", "&7[&bVerification&7] ");
         this.prefix = colorize(prefixStr);
 
+        // AUTOMATIC WORLD LOADING LOGIC
         if (Bukkit.getWorld(whitelistWorldName) == null) {
-            getLogger().severe("==================================================");
-            getLogger().severe("CRITICAL ERROR: The verification world '" + whitelistWorldName + "' was not found!");
-            getLogger().severe("Please ensure this world is generated and loaded by your server configuration.");
-            getLogger().severe("Disabling WhitelistVerification...");
-            getLogger().severe("==================================================");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+            getLogger().info("World '" + whitelistWorldName + "' was not found active. Forcing server to initialize it...");
+            try {
+                WorldCreator creator = new WorldCreator(whitelistWorldName);
+                Bukkit.createWorld(creator);
+                getLogger().info("Successfully initialized and bound to world: " + whitelistWorldName);
+            } catch (Exception e) {
+                getLogger().severe("==================================================");
+                getLogger().severe("CRITICAL ERROR: Failed to automatically build or load '" + whitelistWorldName + "'!");
+                getLogger().severe("Disabling WhitelistVerification...");
+                getLogger().severe("==================================================");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
 
         getServer().getPluginManager().registerEvents(new VerificationListener(this), this);
