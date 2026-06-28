@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-    // Native Paper 26.2 target for Chaos Cubed
-    compileOnly "io.papermc.paper:paper-api:26.2-R0.1-SNAPSHOT"
+    // Targets the precise Paper 26.2 Release 36 API artifact
+    compileOnly "io.papermc.paper:paper-api:26.2.build.36-alpha"
 }
 
 def targetJavaVersion = 25
