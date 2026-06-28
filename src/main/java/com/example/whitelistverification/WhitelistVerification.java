@@ -1,6 +1,7 @@
 package com.example.whitelistverification;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.kyori.adventure.text.Component;
@@ -36,11 +37,12 @@ public final class WhitelistVerification extends JavaPlugin {
         this.prefix = colorize(prefixStr);
 
         // Dynamic world loading and creation fallbacks
-        if (Bukkit.getWorld(whitelistWorldName) == null) {
+        World voidWorld = Bukkit.getWorld(whitelistWorldName);
+        if (voidWorld == null) {
             getLogger().info("World '" + whitelistWorldName + "' was not found active. Forcing server to initialize it...");
             try {
                 WorldCreator creator = new WorldCreator(whitelistWorldName);
-                Bukkit.createWorld(creator);
+                voidWorld = Bukkit.createWorld(creator);
                 getLogger().info("Successfully initialized and bound to world: " + whitelistWorldName);
             } catch (Exception e) {
                 getLogger().severe("==================================================");
@@ -50,6 +52,13 @@ public final class WhitelistVerification extends JavaPlugin {
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
+        }
+
+        // Programmatic Performance Optimization: Locks the void world to an absolute minimum 2-chunk load footprint
+        if (voidWorld != null) {
+            voidWorld.setViewDistance(2);
+            voidWorld.setSimulationDistance(2);
+            getLogger().info("Successfully clamped view-distance and simulation-distance to 2 chunks on '" + whitelistWorldName + "'.");
         }
 
         getServer().getPluginManager().registerEvents(new VerificationListener(this), this);
