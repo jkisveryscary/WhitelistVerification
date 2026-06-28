@@ -1,0 +1,9 @@
+name: WhitelistVerification
+version: '1.0.0'
+main: com.example.whitelistverification.WhitelistVerification
+api-version: '26.2'
+description: A complete whitelist verification system using password entry inside a dedicated void world.
+commands:
+  password:
+    description: Enter the server password to clear verification.
+    usage: /password <password>
