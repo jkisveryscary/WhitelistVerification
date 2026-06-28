@@ -89,7 +89,8 @@ public class VerificationListener implements Listener {
                 lockedLoc.setPitch(to.getPitch());
                 event.setTo(lockedLoc);
 
-                player.sendActionBar(plugin.colorize("&c&lLOG LOCKED: &eType &a/password <password> &eto unlock."));
+                // Updated Action Bar Message
+                player.sendActionBar(plugin.colorize("&c&lSERVER LOCKED: &eType &a/password <password> &eto unlock."));
             }
         }
     }
@@ -228,7 +229,6 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
-            // Server Operator Command Pass-through
             if (player.isOp()) {
                 return;
             }
@@ -248,7 +248,6 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandSend(PlayerCommandSendEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
-            // Server Operator Autocomplete Pass-through
             if (player.isOp()) {
                 return;
             }
