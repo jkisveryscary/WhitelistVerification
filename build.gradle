@@ -14,11 +14,11 @@ repositories {
 }
 
 dependencies {
-    // Targets Paper 26.2 (Chaos Cubed Ecosystem)
+    // Native Paper 26.2 target for Chaos Cubed
     compileOnly "io.papermc.paper:paper-api:26.2-R0.1-SNAPSHOT"
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def version = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = version
