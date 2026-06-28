@@ -34,7 +34,8 @@ public class PasswordCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String correctPassword = plugin.getConfig().getString("verification-password", "ServerPassword123");
+        // Fixed match path to look for "password" instead of "verification-password"
+        String correctPassword = plugin.getConfig().getString("password", "ServerPassword123");
         if (args[0].equals(correctPassword)) {
             plugin.getUnverifiedPlayers().remove(player.getUniqueId());
             player.setWhitelisted(true);
