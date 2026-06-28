@@ -19,6 +19,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import net.kyori.adventure.title.Title;
+import java.time.Duration;
 
 public class VerificationListener implements Listener {
 
@@ -32,14 +34,12 @@ public class VerificationListener implements Listener {
     public void onAsyncPlayerSpawnLocation(AsyncPlayerSpawnLocationEvent event) {
         PlayerProfile profile = event.getConnection().getProfile();
         
-        // Ensure profile unique IDs are checked against the vanilla whitelist registry source of truth
         if (profile != null && profile.getId() != null) {
             if (Bukkit.getOfflinePlayer(profile.getId()).isWhitelisted()) {
                 return;
             }
         }
 
-        // Alters the spawn entry point safely during the modern configuration phase
         World voidWorld = Bukkit.getWorld(plugin.getWhitelistWorldName());
         if (voidWorld != null) {
             Location loc = new Location(voidWorld, plugin.getTeleportX(), plugin.getTeleportY(), plugin.getTeleportZ(), plugin.getTeleportYaw(), plugin.getTeleportPitch());
@@ -61,6 +61,14 @@ public class VerificationListener implements Listener {
             Location loc = new Location(voidWorld, plugin.getTeleportX(), plugin.getTeleportY(), plugin.getTeleportZ(), plugin.getTeleportYaw(), plugin.getTeleportPitch());
             player.teleport(loc);
         }
+
+        // Display a large title message directly on their screen upon joining
+        Title title = Title.title(
+            plugin.colorize("&4&lVERIFICATION REQUIRED"),
+            plugin.colorize("&eType &a/password <password> &ein chat to join!"),
+            Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(10000), Duration.ofMillis(500))
+        );
+        player.showTitle(title);
     }
 
     @EventHandler
@@ -80,6 +88,9 @@ public class VerificationListener implements Listener {
                 lockedLoc.setYaw(to.getYaw());
                 lockedLoc.setPitch(to.getPitch());
                 event.setTo(lockedLoc);
+
+                // Send a non-intrusive action bar notification if they try to move away
+                player.sendActionBar(plugin.colorize("&c&lLOG LOCKED: &eType &a/password <password> &eto unlock."));
             }
         }
     }
@@ -218,6 +229,11 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
+            // OPERATOR BYPASS: Allow operators to execute any command seamlessly
+            if (player.isOp()) {
+                return;
+            }
+
             String message = event.getMessage().trim();
             String[] parts = message.split(" ");
             String command = parts[0];
@@ -233,6 +249,10 @@ public class VerificationListener implements Listener {
     public void onPlayerCommandSend(PlayerCommandSendEvent event) {
         Player player = event.getPlayer();
         if (plugin.getUnverifiedPlayers().containsKey(player.getUniqueId())) {
+            // OPERATOR BYPASS: Do not restrict tab completions for operators
+            if (player.isOp()) {
+                return;
+            }
             event.getCommands().clear();
             event.getCommands().add("password");
         }
