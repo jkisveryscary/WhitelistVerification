@@ -35,7 +35,7 @@ public final class WhitelistVerification extends JavaPlugin {
         String prefixStr = getConfig().getString("messages.plugin-prefix", "&7[&bVerification&7] ");
         this.prefix = colorize(prefixStr);
 
-        // AUTOMATIC WORLD LOADING LOGIC
+        // Dynamic world loading and creation fallbacks
         if (Bukkit.getWorld(whitelistWorldName) == null) {
             getLogger().info("World '" + whitelistWorldName + "' was not found active. Forcing server to initialize it...");
             try {
