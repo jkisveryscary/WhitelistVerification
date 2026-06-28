@@ -1,5 +1,7 @@
 package com.example.whitelistverification;
 
+import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,7 +19,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 public class VerificationListener implements Listener {
 
@@ -28,12 +29,17 @@ public class VerificationListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerSpawnLocation(PlayerSpawnLocationEvent event) {
-        Player player = event.getPlayer();
-        if (player.isWhitelisted()) {
-            return;
+    public void onAsyncPlayerSpawnLocation(AsyncPlayerSpawnLocationEvent event) {
+        PlayerProfile profile = event.getConnection().getProfile();
+        
+        // Ensure profile unique IDs are checked against the vanilla whitelist registry source of truth
+        if (profile != null && profile.getId() != null) {
+            if (Bukkit.getOfflinePlayer(profile.getId()).isWhitelisted()) {
+                return;
+            }
         }
 
+        // Alters the spawn entry point safely during the modern configuration phase
         World voidWorld = Bukkit.getWorld(plugin.getWhitelistWorldName());
         if (voidWorld != null) {
             Location loc = new Location(voidWorld, plugin.getTeleportX(), plugin.getTeleportY(), plugin.getTeleportZ(), plugin.getTeleportYaw(), plugin.getTeleportPitch());
